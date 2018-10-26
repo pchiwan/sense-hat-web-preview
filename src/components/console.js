@@ -24,11 +24,9 @@ const buttonStyles = {
   cursor: 'pointer',
   padding: '5px 10px',
   borderRadius: '4px',
-  backgroundColor: 'lightgrey',
   marginTop: '15px',
   fontSize: '14px',
-  fontWeight: '500',
-  width: '100%'
+  fontWeight: '500'
 }
 
 class Console extends Component {

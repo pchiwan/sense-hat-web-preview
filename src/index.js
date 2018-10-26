@@ -5,6 +5,7 @@ const black = [0, 0, 0]
 const red = [255, 0, 0]
 const yellow = [255, 255, 0]
 const blue = [0, 0, 255]
+const green = [0, 255, 0]
 const white = [255, 255, 255]
 
 let currentShapeIndex = 0
@@ -14,6 +15,7 @@ const { shapes } = (() => {
   const R = red
   const Y = yellow
   const B = blue
+  const G = green
   const W = white
 
   const shapes = {
@@ -30,10 +32,10 @@ const { shapes } = (() => {
     heart: [
       _, _, _, _, _, _, _, _,
       _, R, R, _, _, R, R, _,
-      R, _, _, R, R, _, _, R,
-      R, _, _, _, _, _, _, R,
-      _, R, _, _, _, _, R, _,
-      _, _, R, _, _, R, _, _,
+      R, R, R, R, R, R, R, R,
+      R, R, R, R, R, R, R, R,
+      _, R, R, R, R, R, R, _,
+      _, _, R, R, R, R, _, _,
       _, _, _, R, R, _, _, _,
       _, _, _, _, _, _, _, _
     ],
@@ -50,11 +52,21 @@ const { shapes } = (() => {
     drop: [
       _, _, _, _, _, _, _, _,
       _, _, _, B, _, _, _, _,
-      _, _, B, _, B, _, _, _,
-      _, B, _, _, _, B, _, _,
-      _, B, _, _, _, B, _, _,
-      _, B, _, _, _, B, _, _,
       _, _, B, B, B, _, _, _,
+      _, B, B, B, B, B, _, _,
+      _, B, B, B, B, B, _, _,
+      _, B, B, B, B, B, _, _,
+      _, _, B, B, B, _, _, _,
+      _, _, _, _, _, _, _, _
+    ],
+    check: [
+      _, _, _, _, _, _, _, _,
+      _, _, _, _, _, _, G, G,
+      _, _, _, _, _, G, G, G,
+      G, G, _, _, G, G, G, _,
+      G, G, G, G, G, G, _, _,
+      _, G, G, G, G, _, _, _,
+      _, _, G, G, _, _, _, _,
       _, _, _, _, _, _, _, _
     ]
   }

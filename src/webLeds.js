@@ -1,20 +1,23 @@
 import { h, render } from 'preact'
 
-import Matrix from './components/matrix'
+import SenseHAT from './components/senseHat'
 import { MATRIX_LENGTH } from './constants'
 
 const WebLeds = () => {
-  let matrixRef
+  let senseHatRef
   let innerMatrix
 
-  const getMatrixRef = node => {
-    matrixRef = node
+  const getSenseHatRef = node => {
+    senseHatRef = node
   }
 
-  render(<Matrix ref={getMatrixRef} />, document.getElementById('matrix'))
+  render(
+    <SenseHAT ref={getSenseHatRef} />,
+    document.getElementById('sense-hat')
+  )
 
   const paint = () => {
-    matrixRef.updateMatrix(innerMatrix)
+    senseHatRef.updateMatrix(innerMatrix)
   }
 
   const setPixels = matrix => {

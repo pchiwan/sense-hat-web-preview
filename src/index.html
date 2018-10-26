@@ -8,13 +8,15 @@
   <title>WebEmu</title>
   <style>
     body {
+      margin: 0;
+      margin-bottom: 20px;
       font-family: sans-serif;
       text-align: center;
     }
-    img {
+    #logo {
       height: 30px;
     }
-    #matrix, #joystick-log {
+    #joystick-log {
       display: flex;
       justify-content: center;
     }
@@ -22,10 +24,10 @@
 </head>
 <body>
   <h1>
-    <img src="./raspberry.png" alt="Raspberry Pi" /> Raspberry Pi Sense HAT Web Emulator
+    <img id="logo" src="./raspberry.png" alt="Raspberry Pi" /> Raspberry Pi Sense HAT Web Emulator
   </h1>
   <h2>LED Matrix</h2>
-  <div id="matrix"></div>
+  <div id="sense-hat"></div>
   <hr />
   <h2>Joystick Log</h2>
   <div id="joystick-log"></div>

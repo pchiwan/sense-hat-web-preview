@@ -1,0 +1,32 @@
+{
+  "name": "sense-hat-web-emu",
+  "version": "0.0.1",
+  "description": "Web emulator for Sense HAT applications",
+  "main": "src/app.js",
+  "scripts": {
+    "start": "parcel ./src/index.html --out-dir build",
+    "build": "parcel build ./src/index.html --out-dir build --public-url ./build --no-source-maps",
+    "lint": "eslint src/**/*.js",
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:pchiwan/sense-hat-web-emu.git"
+  },
+  "license": "MIT",
+  "author": "Sílvia Mur <silvia.murblanch@gmail.com>",
+  "homepage": "https://github.com/pchiwan/sense-hat-web-emu#readme",
+  "devDependencies": {
+    "babel-core": "^6.26.3",
+    "babel-preset-env": "^1.7.0",
+    "babel-preset-preact": "^1.1.0",
+    "eslint": "^5.7.0",
+    "eslint-plugin-react": "^7.11.1",
+    "jest": "^23.6.0"
+  },
+  "dependencies": {
+    "parcel-bundler": "^1.10.3",
+    "preact": "^8.3.1",
+    "preact-compat": "^3.18.4"
+  }
+}

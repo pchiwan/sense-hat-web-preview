@@ -2,12 +2,16 @@ import { h } from 'preact'
 
 const checkboxStyles = {
   lineHeight: '40px',
-  fontWeight: 'bold'
+  fontWeight: 'bold',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  userSelect: 'none'
 }
 
 const Checkbox = ({ checked, label, onChange }) => {
   return (
-    <div style={checkboxStyles}>
+    <div onClick={onChange} style={checkboxStyles}>
       <input
         style={{ outline: 'none' }}
         type='checkbox'

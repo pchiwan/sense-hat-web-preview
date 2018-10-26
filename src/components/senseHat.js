@@ -1,9 +1,9 @@
 import { h, Component } from 'preact'
 
-import { Table, TableCell } from './table'
 import Checkbox from './checkbox'
-import { rgbArrayToColor } from '../utils'
-import { MATRIX_SIZE, MATRIX_LENGTH } from '../constants'
+import LedMatrix from './ledMatrix'
+
+import { MATRIX_LENGTH } from '../constants'
 import senseHatImage from './sense-hat.png'
 
 const BGIMAGE_OFFSET = 38
@@ -12,13 +12,6 @@ const matrixStyles = {
   display: 'flex',
   justifyContent: 'center',
   height: '320px'
-}
-
-const tableStyles = {
-  borderCollapse: 'separate',
-  borderSpacing: '2px 5px',
-  position: 'relative',
-  top: '57px'
 }
 
 class SenseHAT extends Component {
@@ -31,7 +24,7 @@ class SenseHAT extends Component {
       bgLeft: 0
     }
 
-    this.getTableRef = this.getTableRef.bind(this)
+    this.getMatrixRef = this.getMatrixRef.bind(this)
     this.handleResize = this.handleResize.bind(this)
     this.toggleBoard = this.toggleBoard.bind(this)
   }
@@ -47,7 +40,7 @@ class SenseHAT extends Component {
 
   handleResize () {
     this.setState({
-      bgLeft: this.table.getBoundingClientRect().left
+      bgLeft: this.matrix.getBoundingClientRect().left
     })
   }
 
@@ -57,8 +50,8 @@ class SenseHAT extends Component {
     })
   }
 
-  getTableRef (node) {
-    this.table = node
+  getMatrixRef (node) {
+    this.matrix = node
   }
 
   updateMatrix (matrix) {
@@ -81,25 +74,11 @@ class SenseHAT extends Component {
     return (
       <div>
         <div style={displayBoard ? matrixStylesWithBg : matrixStyles}>
-          <Table
-            getRef={this.getTableRef}
-            style={tableStyles}>{
-              [...Array(MATRIX_SIZE)].map((_, i) => (
-                <tr key={`tr-${i}`}>
-                  {matrix
-                    .slice(i * MATRIX_SIZE, i * MATRIX_SIZE + MATRIX_SIZE)
-                    .map((value, j) => (
-                      <TableCell
-                        key={`td-${i}-${j}`}
-                        color={rgbArrayToColor(value)}
-                        showBorder={!displayBoard}
-                      />
-                    ))
-                  }
-                </tr>
-              ))
-            }
-          </Table>
+          <LedMatrix
+            getRef={this.getMatrixRef}
+            showCellBorders={!displayBoard}
+            matrix={matrix}
+          />
         </div>
         <Checkbox
           label='Display Sense HAT'

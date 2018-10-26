@@ -24,8 +24,8 @@ export const TableCell = ({ key, color, showBorder }) => (
       height: '20px',
       width: '20px',
       backgroundColor: color,
-      borderRadius: '3px',
       border: `${showBorder ? '1px solid darkgrey' : 'none'}`,
+      borderRadius: `${showBorder ? '0' : '3px'}`,
       boxSizing: 'border-box'
     }}
   />

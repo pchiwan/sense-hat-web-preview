@@ -1,17 +1,9 @@
-import { h, render } from 'preact'
-
-const Logger = () => {
-  let domElement
-
-  return {
-    log: message => {
-      domElement = render(
-        <p style={{ lineHeight: '24px' }}>{message}</p>,
-        document.getElementById('joystick-log'),
-        domElement
-      )
-    }
-  }
+export const isValidColorIntensity = value => {
+  return value >= 0 && value <= 255
 }
 
-export const logger = Logger()
+export const rgbArrayToColor = rgbArray => {
+  return rgbArray.length === 3 && rgbArray.every(isValidColorIntensity)
+    ? `rgb(${rgbArray.join(',')})`
+    : 'black'
+}

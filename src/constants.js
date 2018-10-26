@@ -39,3 +39,6 @@ export const KEY_TO_STRING = {
   [KEY_A]: 'LEFT ⬅',
   [KEY_ENTER]: 'CLICK'
 }
+
+export const MATRIX_SIZE = 8
+export const MATRIX_LENGTH = MATRIX_SIZE * MATRIX_SIZE

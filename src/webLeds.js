@@ -1,47 +1,20 @@
 import { h, render } from 'preact'
 
-const MATRIX_SIZE = 8
-const MATRIX_LENGTH = MATRIX_SIZE * MATRIX_SIZE
-
-const Table = ({ children }) => (
-  <table
-    cellPadding='0'
-    cellSpacing='0'
-    style={{ borderCollapse: 'collapse' }}
-  >
-    <tbody>
-      {children}
-    </tbody>
-  </table>
-)
-
-const TableCell = ({ key, color }) => (
-  <td
-    key={key}
-    style={{
-      height: '20px',
-      width: '20px',
-      backgroundColor: color,
-      border: '1px solid darkgrey'
-    }}
-  />
-)
+import Matrix from './components/matrix'
+import { MATRIX_LENGTH } from './constants'
 
 const WebLeds = () => {
-  let domElement
+  let matrixRef
+  let innerMatrix
 
-  const renderToDom = content => {
-    domElement = render(content, document.getElementById('matrix'), domElement)
+  const getMatrixRef = node => {
+    matrixRef = node
   }
 
-  const isValidColorIntensity = value => {
-    return value >= 0 && value <= 255
-  }
+  render(<Matrix ref={getMatrixRef} />, document.getElementById('matrix'))
 
-  const rgbArrayToColor = rgbArray => {
-    return rgbArray.length === 3 && rgbArray.every(isValidColorIntensity)
-      ? `rgb(${rgbArray.join(',')})`
-      : 'black'
+  const paint = () => {
+    matrixRef.updateMatrix(innerMatrix)
   }
 
   const setPixels = matrix => {
@@ -49,27 +22,16 @@ const WebLeds = () => {
       console.error(`Pixel arrays must have ${MATRIX_LENGTH} elements`)
     }
 
-    renderToDom((
-      <Table>{
-        [...Array(MATRIX_SIZE)].map((_, i) => (
-          <tr key={`tr-${i}`}>
-            {matrix
-              .slice(i * MATRIX_SIZE, i * MATRIX_SIZE + MATRIX_SIZE)
-              .map((value, j) => (
-                <TableCell
-                  key={`td-${i}-${j}`}
-                  color={rgbArrayToColor(value)}
-                />
-              ))
-            }
-          </tr>
-        ))}
-      </Table>
-    ))
+    innerMatrix = matrix
+    paint()
   }
 
   const setPixel = () => {
     console.log('work in progress')
+  }
+
+  const getPixels = () => {
+    return innerMatrix
   }
 
   const showMessage = () => {
@@ -77,6 +39,7 @@ const WebLeds = () => {
   }
 
   return {
+    getPixels,
     setPixels,
     setPixel,
     showMessage

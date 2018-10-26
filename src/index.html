@@ -9,14 +9,26 @@
   <style>
     body {
       font-family: sans-serif;
+      text-align: center;
+    }
+    img {
+      height: 30px;
+    }
+    #matrix, #joystick-log {
+      display: flex;
+      justify-content: center;
     }
   </style>
 </head>
 <body>
-  <h1>Raspberry Pi Sense HAT Web Emulator</h1>
+  <h1>
+    <img src="./raspberry.png" alt="Raspberry Pi" /> Raspberry Pi Sense HAT Web Emulator
+  </h1>
+  <h2>LED Matrix</h2>
   <div id="matrix"></div>
+  <hr />
   <h2>Joystick Log</h2>
   <div id="joystick-log"></div>
-  <script src="./app.js"></script>
+  <script src="./index.js"></script>
 </body>
 </html>

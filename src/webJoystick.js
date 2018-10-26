@@ -1,4 +1,4 @@
-import { logger } from './utils'
+import { logger } from './logger'
 
 import {
   KEY_TO_JOYSTICK_EVENT,
@@ -18,8 +18,11 @@ const WebJoystick = () => {
   const handleKeyEvent = event => {
     const { keyCode } = event
     const joystickEvent = KEY_TO_JOYSTICK_EVENT[event.type]
+
     emitEvent(joystickEvent, KEY_TO_DIRECTION[keyCode])
-    logger.log(`${joystickEvent} ${KEY_TO_STRING[keyCode]}`)
+    if (KEY_TO_STRING[keyCode]) {
+      logger.log(`${joystickEvent} ${KEY_TO_STRING[keyCode]}`)
+    }
   }
 
   const on = (eventName, handlerFn) => {

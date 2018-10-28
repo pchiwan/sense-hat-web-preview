@@ -4,7 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <link rel="icon" href="./raspberry.png">
+  <link rel="icon" href="/assets/raspberry.png">
+  <script type="text/javascript" src="/socket.io/socket.io.js"></script>
   <title>WebEmu</title>
   <style>
     body {
@@ -24,13 +25,13 @@
 </head>
 <body>
   <h1>
-    <img id="logo" src="./raspberry.png" alt="Raspberry Pi" /> Raspberry Pi Sense HAT Web Emulator
+    <img id="logo" src="/assets/raspberry.png" alt="Raspberry Pi" /> Raspberry Pi Sense HAT Web Emulator
   </h1>
   <h2>LED Matrix</h2>
   <div id="sense-hat"></div>
   <hr />
   <h2>Joystick Log</h2>
   <div id="joystick-log"></div>
-  <script src="./index.js"></script>
+  <script src="/build/client.js"></script>
 </body>
 </html>

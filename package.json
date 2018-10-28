@@ -4,8 +4,12 @@
   "description": "Web emulator for Sense HAT applications",
   "main": "src/app.js",
   "scripts": {
-    "start": "parcel ./src/index.html --out-dir build",
-    "build": "parcel build ./src/index.html --out-dir build --public-url ./build --no-source-maps",
+    "start:client": "parcel build ./src/client/index.js --out-dir build --out-file client.js --public-url ./build",
+    "start:server": "nodemon ./src/index.js",
+    "start": "concurrently \"yarn start:client\" \"yarn start:server\"",
+    "build:client": "parcel build ./src/client/index.js --out-dir build --out-file client.js --public-url ./build --no-source-maps",
+    "build:server": "parcel build ./src/index.js --out-dir build --no-source-maps",
+    "build": "yarn build:client && yarn build:server",
     "lint": "eslint src/**/*.js",
     "test": "jest"
   },
@@ -20,14 +24,19 @@
     "babel-core": "^6.26.3",
     "babel-preset-env": "^1.7.0",
     "babel-preset-preact": "^1.1.0",
-    "eslint": "^5.7.0",
+    "babel-preset-stage-0": "^6.24.1",
+    "concurrently": "^4.0.1",
+    "eslint": "4.19.1",
     "eslint-plugin-react": "^7.11.1",
-    "jest": "^23.6.0"
+    "jest": "^23.6.0",
+    "nodemon": "^1.18.5"
   },
   "dependencies": {
-    "babel-preset-stage-0": "^6.24.1",
+    "express": "^4.16.4",
     "parcel-bundler": "^1.10.3",
+    "pngjs": "^3.3.3",
     "preact": "^8.3.1",
-    "preact-compat": "^3.18.4"
+    "preact-compat": "^3.18.4",
+    "socket.io": "^2.1.1"
   }
 }

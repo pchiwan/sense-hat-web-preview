@@ -1,52 +1,101 @@
-import { h, render } from 'preact'
+const { letterPixels, rgbArray } = require('./utils')
+const { MATRIX_LENGTH } = require('./constants')
 
-import SenseHAT from './components/senseHat'
-import { MATRIX_LENGTH } from './constants'
-
-const WebLeds = () => {
-  let senseHatRef
+const WebLeds = socket => {
   let innerMatrix
-
-  const getSenseHatRef = node => {
-    senseHatRef = node
-  }
-
-  render(
-    <SenseHAT ref={getSenseHatRef} />,
-    document.getElementById('sense-hat')
-  )
+  let rotation
 
   const paint = () => {
-    senseHatRef.updateMatrix(innerMatrix)
+    socket.emit('updateMatrix', innerMatrix)
   }
 
-  const setPixels = matrix => {
+  const checkAngle = (angle = 0) => {
+    if (angle < 0) angle += 360 // negative angle for counterclockwise rotation
+    if (!(angle % 90 === 0 && angle >= 0 && angle < 360)) {
+      console.error('Rotation must be 0, 90, 180 or 270 degrees')
+      return rotation
+    }
+    return angle
+  }
+
+  const clear = (r, g, b, callback = () => {}) => {
+    setPixels(Array(MATRIX_LENGTH).fill(rgbArray(r, g, b)), callback)
+  }
+
+  const getPixels = (callback = () => {}) => {
+    callback(null, innerMatrix)
+    return innerMatrix
+  }
+
+  const setPixels = (matrix, callback = () => {}) => {
     if (matrix.length !== MATRIX_LENGTH) {
       console.error(`Pixel arrays must have ${MATRIX_LENGTH} elements`)
     }
 
     innerMatrix = matrix
     paint()
+    callback(null, innerMatrix)
   }
 
   const setPixel = () => {
     console.log('work in progress')
   }
 
-  const getPixels = () => {
-    return innerMatrix
+  // Sets the LED matrix rotation for viewing, adjust if the Pi is upside
+  // down or sideways. 0 is with the Pi HDMI port facing downwards
+  const setRotation = (r, redraw = true, callback = () => {}) => {
+    rotation = checkAngle(r)
+    
+    if (!redraw) return callback(null)
+
+    getPixels((error, pixels) => {
+      if (error) return callback(error)
+      setPixels(pixels, callback)
+    })
+  }
+
+  // Displays a single text character on the LED matrix using the specified colors
+  const showLetter = (letter, textColor, backColor, callback = () => {}) => {
+    if (letter.length !== 1) {
+      callback(Error('Only one character may be passed into this showLetter'))
+      return
+    }
+
+    const pixels = letterPixels(letter, textColor, backColor)
+
+    // We must rotate the pixel map right through 90 degrees when drawing
+    // text, see loadTextAssets
+    const previousRotation = rotation
+    rotation = (rotation + 90) % 360
+    setPixels(pixels, (error) => {
+      rotation = previousRotation
+      callback(error)
+    })
   }
 
   const showMessage = () => {
     console.log('work in progress')
   }
 
+  const flashMessage = () => {
+    console.log('work in progress')
+  }
+
   return {
+    clear,
     getPixels,
     setPixels,
     setPixel,
-    showMessage
+    setRotation,
+    showLetter,
+    showMessage,
+    flashMessage,
+    sync: {
+      setPixelsSync: setPixels,
+      setRotationSync: setRotation,
+      showLetterSync: showLetter
+    }
   }
 }
 
-export default WebLeds()
+module.exports = WebLeds

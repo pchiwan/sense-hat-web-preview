@@ -1,22 +1,20 @@
-export const KEY_ENTER = 13
-export const KEY_LEFT = 37
-export const KEY_UP = 38
-export const KEY_RIGHT = 39
-export const KEY_DOWN = 40
-export const KEY_A = 65
-export const KEY_D = 68
-export const KEY_S = 83
-export const KEY_W = 87
+const BLACK = [0, 0, 0]
+const WHITE = [255, 255, 255]
 
-export const KEYDOWN_EVENT = 'keydown'
-export const KEYUP_EVENT = 'keyup'
+const KEY_ENTER = 13
+const KEY_LEFT = 37
+const KEY_UP = 38
+const KEY_RIGHT = 39
+const KEY_DOWN = 40
+const KEY_A = 65
+const KEY_D = 68
+const KEY_S = 83
+const KEY_W = 87
 
-export const KEY_TO_JOYSTICK_EVENT = {
-  [KEYDOWN_EVENT]: 'press',
-  [KEYUP_EVENT]: 'release'
-}
+const KEYDOWN_EVENT = 'keydown'
+const KEYUP_EVENT = 'keyup'
 
-export const KEY_TO_DIRECTION = {
+const KEY_TO_DIRECTION = {
   [KEY_UP]: 'up',
   [KEY_W]: 'up',
   [KEY_RIGHT]: 'right',
@@ -28,7 +26,12 @@ export const KEY_TO_DIRECTION = {
   [KEY_ENTER]: 'click'
 }
 
-export const KEY_TO_STRING = {
+const KEY_TO_JOYSTICK_EVENT = {
+  [KEYDOWN_EVENT]: 'press',
+  [KEYUP_EVENT]: 'release'
+}
+
+const KEY_TO_STRING = {
   [KEY_UP]: 'UP ⬆',
   [KEY_W]: 'UP ⬆',
   [KEY_RIGHT]: 'RIGHT ➡',
@@ -40,5 +43,15 @@ export const KEY_TO_STRING = {
   [KEY_ENTER]: 'CLICK'
 }
 
-export const MATRIX_SIZE = 8
-export const MATRIX_LENGTH = MATRIX_SIZE * MATRIX_SIZE
+const MATRIX_SIZE = 8
+const MATRIX_LENGTH = MATRIX_SIZE * MATRIX_SIZE
+
+module.exports = {
+  BLACK,
+  WHITE,
+  KEY_TO_DIRECTION,
+  KEY_TO_JOYSTICK_EVENT,
+  KEY_TO_STRING,
+  MATRIX_SIZE,
+  MATRIX_LENGTH
+}

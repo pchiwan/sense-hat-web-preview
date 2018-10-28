@@ -1,8 +1,8 @@
 import { h } from 'preact'
 
 import { Table, TableCell } from './table'
-import { rgbArrayToColor } from '../utils'
-import { MATRIX_SIZE } from '../constants'
+import { rgbArrayToString } from '../utils'
+import { MATRIX_SIZE } from '../../constants'
 
 const tableStyles = {
   borderCollapse: 'separate',
@@ -22,7 +22,7 @@ const LedMatrix = ({ getRef, showCellBorders, matrix }) => (
             .map((value, j) => (
               <TableCell
                 key={`td-${i}-${j}`}
-                color={rgbArrayToColor(value)}
+                color={rgbArrayToString(value)}
                 showBorder={showCellBorders}
               />
             ))

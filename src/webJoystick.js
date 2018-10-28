@@ -1,12 +1,12 @@
-import { logger } from './logger'
-
-import {
+const Logger = require('./logger')
+const {
   KEY_TO_JOYSTICK_EVENT,
   KEY_TO_DIRECTION,
   KEY_TO_STRING
-} from './constants'
+} = require('./constants')
 
-const WebJoystick = () => {
+const WebJoystick = socket => {
+  const logger = Logger(socket)
   const subscribers = {}
 
   const emitEvent = (joystickEvent, direction) => {
@@ -15,11 +15,10 @@ const WebJoystick = () => {
     }
   }
 
-  const handleKeyEvent = event => {
-    const { keyCode } = event
-    const joystickEvent = KEY_TO_JOYSTICK_EVENT[event.type]
-
+  const handleKeyEvent = ({keyCode, eventType}) => {
+    const joystickEvent = KEY_TO_JOYSTICK_EVENT[eventType]
     emitEvent(joystickEvent, KEY_TO_DIRECTION[keyCode])
+
     if (KEY_TO_STRING[keyCode]) {
       logger.log(`${joystickEvent} ${KEY_TO_STRING[keyCode]}`)
     }
@@ -32,18 +31,19 @@ const WebJoystick = () => {
     subscribers[eventName].push(handlerFn)
   }
 
-  document.addEventListener('keydown', handleKeyEvent)
-  document.addEventListener('keyup', handleKeyEvent)
+  socket.on('handleKeyEvent', handleKeyEvent)
 
   return {
     on
   }
 }
 
-export default {
-  getJoystick: () => {
-    return new Promise((resolve) => {
-      resolve(WebJoystick())
-    })
+module.exports = socket => {
+  return {
+    getJoystick: () => {
+      return new Promise((resolve) => {
+        resolve(WebJoystick(socket))
+      })
+    }
   }
 }

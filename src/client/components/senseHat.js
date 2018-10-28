@@ -3,7 +3,7 @@ import { h, Component } from 'preact'
 import Checkbox from './checkbox'
 import LedMatrix from './ledMatrix'
 
-import { MATRIX_LENGTH } from '../constants'
+import { MATRIX_LENGTH } from '../../constants'
 import senseHatImage from './sense-hat.png'
 
 const BGIMAGE_OFFSET = 38
@@ -15,8 +15,10 @@ const matrixStyles = {
 }
 
 class SenseHAT extends Component {
-  constructor () {
-    super()
+  constructor (props) {
+    super(props)
+
+    this.socket = props.socket
 
     this.state = {
       matrix: [...Array(MATRIX_LENGTH).keys()],
@@ -32,6 +34,12 @@ class SenseHAT extends Component {
   componentDidMount () {
     window.addEventListener('resize', this.handleResize)
     this.handleResize()
+
+    this.socket.on('updateMatrix', matrix => {
+      this.setState({
+        matrix
+      })
+    })
   }
 
   componentWillUnmount () {
@@ -52,12 +60,6 @@ class SenseHAT extends Component {
 
   getMatrixRef (node) {
     this.matrix = node
-  }
-
-  updateMatrix (matrix) {
-    this.setState({
-      matrix
-    })
   }
 
   render () {

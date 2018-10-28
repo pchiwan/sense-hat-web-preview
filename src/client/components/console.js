@@ -33,31 +33,37 @@ class Console extends Component {
   constructor (props) {
     super(props)
 
+    this.socket = props.socket
+
     this.state = {
-      items: []
+      messages: []
     }
 
     this.clearConsole = this.clearConsole.bind(this)
   }
 
-  pushItem (item) {
-    this.setState({
-      items: [item, ...this.state.items]
+  componentDidMount () {
+    this.socket.on('message', message => {
+      this.setState({
+        messages: [message, ...this.state.messages]
+      })
     })
   }
-
+  
   clearConsole () {
     this.setState({
-      items: []
+      messages: []
     })
   }
 
   render () {
+    const { messages } = this.state
+
     return (
       <div style={{ width: '250px' }}>
         <div style={consoleStyles}>
           <ul style={listStyles}>
-            {this.state.items.map(item =>
+            {messages.map(item =>
               <li style={listItemStyles}>{item}</li>)
             }
           </ul>

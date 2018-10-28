@@ -1,24 +1,7 @@
-import { h, render } from 'preact'
-
-import Console from './components/console'
-
-const Logger = () => {
-  let consoleRef
-
-  const getConsoleRef = node => {
-    consoleRef = node
-  }
-
-  render(
-    <Console ref={getConsoleRef} />,
-    document.getElementById('joystick-log')
-  )
-
+module.exports = socket => {
   return {
     log: message => {
-      consoleRef.pushItem(message)
+      socket.emit('message', message)
     }
   }
 }
-
-export const logger = Logger()

@@ -46,6 +46,8 @@ const KEY_TO_STRING = {
 const MATRIX_SIZE = 8
 const MATRIX_LENGTH = MATRIX_SIZE * MATRIX_SIZE
 
+const PORT = process.env.PORT || 3000
+
 module.exports = {
   BLACK,
   WHITE,
@@ -53,5 +55,6 @@ module.exports = {
   KEY_TO_JOYSTICK_EVENT,
   KEY_TO_STRING,
   MATRIX_SIZE,
-  MATRIX_LENGTH
+  MATRIX_LENGTH,
+  PORT
 }

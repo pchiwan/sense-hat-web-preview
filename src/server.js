@@ -4,7 +4,7 @@ const express = require('express')
 const app = express()
 const server = require('http').createServer(app)
 
-const PORT = process.env.PORT || 3000
+const { PORT } = require('./constants')
 
 app.use('/dist', express.static(`${path.join(__dirname, '..')}/dist`))
 app.use('/assets', express.static(`${__dirname}/assets`))

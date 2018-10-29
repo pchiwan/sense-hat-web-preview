@@ -19,6 +19,9 @@
     "type": "git",
     "url": "git@github.com:pchiwan/sense-hat-web-emu.git"
   },
+  "bin": {
+    "webemu": "./bin/index.js"
+  },
   "license": "MIT",
   "author": "Sílvia Mur <silvia.murblanch@gmail.com>",
   "homepage": "https://github.com/pchiwan/sense-hat-web-emu#readme",
@@ -31,7 +34,8 @@
     "eslint": "4.19.1",
     "eslint-plugin-react": "^7.11.1",
     "jest": "^23.6.0",
-    "nodemon": "^1.18.5"
+    "nodemon": "^1.18.5",
+    "shelljs-nodecli": "^0.1.1"
   },
   "dependencies": {
     "express": "^4.16.4",

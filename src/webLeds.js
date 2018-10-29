@@ -45,7 +45,7 @@ const WebLeds = socket => {
   // down or sideways. 0 is with the Pi HDMI port facing downwards
   const setRotation = (r, redraw = true, callback = () => {}) => {
     rotation = checkAngle(r)
-    
+
     if (!redraw) return callback(null)
 
     getPixels((error, pixels) => {
@@ -57,7 +57,7 @@ const WebLeds = socket => {
   // Displays a single text character on the LED matrix using the specified colors
   const showLetter = (letter, textColor, backColor, callback = () => {}) => {
     if (letter.length !== 1) {
-      callback(Error('Only one character may be passed into this showLetter'))
+      callback(Error('Only one character may be passed into showLetter'))
       return
     }
 

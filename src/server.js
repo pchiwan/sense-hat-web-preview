@@ -6,7 +6,7 @@ const server = require('http').createServer(app)
 
 const PORT = process.env.PORT || 3000
 
-app.use('/build', express.static(`${path.join(__dirname, '..')}/build`))
+app.use('/dist', express.static(`${path.join(__dirname, '..')}/dist`))
 app.use('/assets', express.static(`${__dirname}/assets`))
 
 app.get('/', (req, res) => {

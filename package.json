@@ -33,17 +33,17 @@
     "concurrently": "^4.0.1",
     "eslint": "4.19.1",
     "eslint-plugin-react": "^7.11.1",
-    "jest": "^23.6.0",
-    "nodemon": "^1.18.5",
-    "shelljs-nodecli": "^0.1.1"
+    "jest": "^23.6.0"
   },
   "dependencies": {
     "express": "^4.16.4",
+    "nodemon": "^1.18.5",
     "opn": "^5.4.0",
     "parcel-bundler": "^1.10.3",
     "pngjs": "^3.3.3",
     "preact": "^8.3.1",
     "preact-compat": "^3.18.4",
+    "shelljs-nodecli": "^0.1.1",
     "socket.io": "^2.1.1"
   }
 }

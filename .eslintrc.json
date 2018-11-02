@@ -19,6 +19,12 @@
       "pragma": "h"
     }
   },
+  "globals": {
+    "beforeEach": true,
+    "describe": true,
+    "expect": true,
+    "test": true
+  },
   "rules": {
     "react/jsx-no-bind": [
       2,

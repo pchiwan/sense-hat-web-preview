@@ -43,13 +43,17 @@ class Console extends Component {
   }
 
   componentDidMount () {
-    this.socket.on('message', message => {
-      this.setState({
-        messages: [message, ...this.state.messages]
+    if (this.socket) {
+      this.socket.on('message', message => {
+        this.setState({
+          messages: [message, ...this.state.messages]
+        })
       })
-    })
+    } else {
+      throw new Error('Could not bind to socket')
+    }
   }
-  
+
   clearConsole () {
     this.setState({
       messages: []

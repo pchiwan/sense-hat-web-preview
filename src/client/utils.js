@@ -8,4 +8,8 @@ export function rgbArrayToString (rgbArray) {
     : 'black'
 }
 
+export function isPerfectSquare (number) {
+  return number > 0 && Math.sqrt(number) % 1 === 0
+}
+
 

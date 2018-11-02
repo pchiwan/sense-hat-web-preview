@@ -35,11 +35,15 @@ class SenseHAT extends Component {
     window.addEventListener('resize', this.handleResize)
     this.handleResize()
 
-    this.socket.on('updateMatrix', matrix => {
-      this.setState({
-        matrix
+    if (this.socket) {
+      this.socket.on('updateMatrix', matrix => {
+        this.setState({
+          matrix
+        })
       })
-    })
+    } else {
+      throw new Error('Could not bind to socket')
+    }
   }
 
   componentWillUnmount () {
@@ -48,7 +52,7 @@ class SenseHAT extends Component {
 
   handleResize () {
     this.setState({
-      bgLeft: this.matrix.getBoundingClientRect().left
+      bgLeft: this.matrixRef && this.matrixRef.getBoundingClientRect().left
     })
   }
 
@@ -59,7 +63,7 @@ class SenseHAT extends Component {
   }
 
   getMatrixRef (node) {
-    this.matrix = node
+    this.matrixRef = node
   }
 
   render () {

@@ -46,6 +46,8 @@ const KEY_TO_STRING = {
 const MATRIX_SIZE = 8
 const MATRIX_LENGTH = MATRIX_SIZE * MATRIX_SIZE
 
+const ONE_SECOND_IN_MS = 1000
+
 const PORT = process.env.PORT || 3000
 
 module.exports = {
@@ -56,5 +58,6 @@ module.exports = {
   KEY_TO_STRING,
   MATRIX_SIZE,
   MATRIX_LENGTH,
+  ONE_SECOND_IN_MS,
   PORT
 }

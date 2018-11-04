@@ -1,7 +1,12 @@
 const fs = require('fs')
 const PNG = require('pngjs').PNG
 
-const { MATRIX_SIZE, BLACK, WHITE } = require('./constants')
+const {
+  BLACK,
+  WHITE,
+  MATRIX_SIZE,
+  ONE_SECOND_IN_MS
+} = require('./constants')
 const TEXT_ASSETS = 'sense_hat_text'
 const LETTER_PIXELS = 5 * 8
 
@@ -10,6 +15,14 @@ const PIXEL_MAP = {
   90: (x, y) => y + ((MATRIX_SIZE - 1) - x) * MATRIX_SIZE,
   180: (x, y) => ((MATRIX_SIZE - 1) - y) * MATRIX_SIZE + ((MATRIX_SIZE - 1) - x),
   270: (x, y) => (MATRIX_SIZE - 1) - y + x * MATRIX_SIZE
+}
+
+function equalArrays (arr1, arr2) {
+  return arr1.every((value, index) => value === arr2[index])
+}
+
+function isBlack (color) {
+  return equalArrays(color, BLACK)
 }
 
 function isValidColorValue (value) {
@@ -101,10 +114,6 @@ const letters = loadTextAssets(
   `${__dirname}/assets/${TEXT_ASSETS}.txt`
 )
 
-function isBlack (color) {
-  return color.every(value => value === 0)
-}
-
 function getCharPixels (character) {
   return character.length === 1 && character in letters
     ? letters[character]
@@ -135,14 +144,14 @@ function scrollPixels (message, textColor = WHITE, backColor = BLACK) {
 }
 
 function trimBack (pixels) {
-  return pixels.slice(-8).every(isBlack)
-    ? trimBack(pixels.slice(0, -8))
+  return pixels.slice(-MATRIX_SIZE).every(isBlack)
+    ? trimBack(pixels.slice(0, -MATRIX_SIZE))
     : pixels
 }
 
 function trimFront (pixels) {
-  return pixels.slice(0, 8).every(isBlack)
-    ? trimFront(pixels.slice(8))
+  return pixels.slice(0, MATRIX_SIZE).every(isBlack)
+    ? trimFront(pixels.slice(MATRIX_SIZE))
     : pixels
 }
 
@@ -191,15 +200,16 @@ function verticalMirror (pixels) {
 }
 
 function sleep (timeout) {
-  return new Promise((resolve) => setTimeout(resolve, timeout * 1000000))
+  return new Promise((resolve) => setTimeout(resolve, timeout * ONE_SECOND_IN_MS))
 }
 
-function syncCurriedFunction (sync, func) {
-  return (...args) => func.apply(this, [sync, ...[].slice.call(args)])
+function curryFunction (value, func) {
+  return (...args) => func.apply(this, [value, ...[].slice.call(args)])
 }
 
 module.exports = {
   checkXY,
+  equalArrays,
   getCharPixels,
   getCoord,
   horizontalMirror,
@@ -210,7 +220,7 @@ module.exports = {
   rgbArray,
   scrollPixels,
   sleep,
-  syncCurriedFunction,
+  curryFunction,
   trimWhitespace,
   verticalMirror
 }

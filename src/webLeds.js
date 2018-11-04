@@ -8,16 +8,16 @@ const {
   rgbArray,
   scrollPixels,
   sleep,
-  syncCurriedFunction,
+  curryFunction,
   verticalMirror
 } = require('./utils')
 const {
   BLACK,
   MATRIX_LENGTH,
-  MATRIX_SIZE
+  MATRIX_SIZE,
+  ONE_SECOND_IN_MS
 } = require('./constants')
 
-const ONE_SECOND_IN_MS = 1000
 const DEFAULT_SCROLL_SPEED = 0.1
 const DEFAULT_FLASH_SPEED = 0.5
 
@@ -66,8 +66,8 @@ const WebLeds = socket => {
 
   const getPixels = (sync = true, callback = noop) => {
     return sync
-      ? innerMatrix
-      : callback(null, innerMatrix)
+      ? innerMatrix.slice(0)
+      : callback(null, innerMatrix.slice(0))
   }
 
   const getPixel = (sync = true, x, y, callback = noop) => {
@@ -95,9 +95,9 @@ const WebLeds = socket => {
     return sync
       ? setMatrixAndPaint(matrix)
       : new Promise(resolve => {
-        resolve()
         setMatrixAndPaint(matrix)
         callback(null, innerMatrix)
+        resolve(innerMatrix)
       })
   }
 
@@ -115,9 +115,9 @@ const WebLeds = socket => {
     return sync
       ? setPixelAndPaint(x, y, rgb)
       : new Promise(resolve => {
-        resolve()
         setPixelAndPaint(x, y, rgb)
         callback(null, innerMatrix)
+        resolve(innerMatrix)
       })
   }
 
@@ -147,10 +147,10 @@ const WebLeds = socket => {
     // We must rotate the pixel map right through 90 degrees when drawing
     // text, see loadTextAssets
     const previousRotation = rotation
-    rotation = (rotation + 90) % 360
+    rotation = (checkAngle(rotation - 90)) % 360
 
     if (sync) {
-      setPixels(true, innerMatrix)
+      setPixels(true, pixels)
       rotation = previousRotation
     } else {
       setPixels(false, pixels, (error) => {
@@ -175,13 +175,13 @@ const WebLeds = socket => {
     // We must rotate the pixel map left through 90 degrees when drawing
     // text, see loadTextAssets
     const previousRotation = rotation
-    rotation = (rotation + 90) % 360
+    rotation = (checkAngle(rotation - 90)) % 360
 
     const scrollSync = pixels => {
       if (pixels.length < MATRIX_LENGTH) return
       setPixels(true, pixels.slice(0, MATRIX_LENGTH))
       sleep(scrollSpeed)
-      scroll(pixels.slice(MATRIX_SIZE))
+      scrollSync(pixels.slice(MATRIX_SIZE))
     }
 
     const scroll = pixels => {
@@ -283,18 +283,18 @@ const WebLeds = socket => {
   }
 
   return {
-    clear: syncCurriedFunction(false, clear),
-    setPixel: syncCurriedFunction(false, setPixel),
-    getPixel: syncCurriedFunction(false, getPixel),
-    setPixels: syncCurriedFunction(false, setPixels),
-    getPixels: syncCurriedFunction(false, getPixels),
-    flipH: syncCurriedFunction(false, flipH),
-    flipV: syncCurriedFunction(false, flipV),
-    setRotation: syncCurriedFunction(false, setRotation),
-    showMessage: syncCurriedFunction(false, showMessage),
-    flashMessage: syncCurriedFunction(false, flashMessage),
-    showLetter: syncCurriedFunction(false, showLetter),
-    loadImage: syncCurriedFunction(false, loadImage),
+    clear: curryFunction(false, clear),
+    setPixel: curryFunction(false, setPixel),
+    getPixel: curryFunction(false, getPixel),
+    setPixels: curryFunction(false, setPixels),
+    getPixels: curryFunction(false, getPixels),
+    flipH: curryFunction(false, flipH),
+    flipV: curryFunction(false, flipV),
+    setRotation: curryFunction(false, setRotation),
+    showMessage: curryFunction(false, showMessage),
+    flashMessage: curryFunction(false, flashMessage),
+    showLetter: curryFunction(false, showLetter),
+    loadImage: curryFunction(false, loadImage),
     get rotation () { return rotation },
     set rotation (angle) { setRotation(false, angle) },
     get gamma () {},
@@ -304,20 +304,20 @@ const WebLeds = socket => {
     set lowLight (bol) {},
     sync: {
       sleep,
-      clear: syncCurriedFunction(true, clear),
-      getPixel: syncCurriedFunction(true, getPixel),
-      setPixel: syncCurriedFunction(true, setPixel),
-      getPixels: syncCurriedFunction(true, getPixels),
-      setPixels: syncCurriedFunction(true, setPixels),
-      flipH: syncCurriedFunction(true, flipH),
-      flipV: syncCurriedFunction(true, flipV),
-      setRotation: syncCurriedFunction(true, setRotation),
-      showMessage: syncCurriedFunction(true, showMessage),
-      flashMessage: syncCurriedFunction(true, flashMessage),
-      showLetter: syncCurriedFunction(true, showLetter),
-      loadImage: syncCurriedFunction(true, loadImage),
+      clear: curryFunction(true, clear),
+      getPixel: curryFunction(true, getPixel),
+      setPixel: curryFunction(true, setPixel),
+      getPixels: curryFunction(true, getPixels),
+      setPixels: curryFunction(true, setPixels),
+      flipH: curryFunction(true, flipH),
+      flipV: curryFunction(true, flipV),
+      setRotation: curryFunction(true, setRotation),
+      showMessage: curryFunction(true, showMessage),
+      flashMessage: curryFunction(true, flashMessage),
+      showLetter: curryFunction(true, showLetter),
+      loadImage: curryFunction(true, loadImage),
       get rotation () { return rotation },
-      set rotation (angle) { setRotation(true, angle, true) },
+      set rotation (angle) { setRotation(true, angle) },
       get gamma () {},
       set gamma (arr) {},
       gammaReset: noop,

@@ -11,6 +11,13 @@ const KEY_D = 68
 const KEY_S = 83
 const KEY_W = 87
 
+const ARROW_KEYS = [
+  KEY_LEFT,
+  KEY_UP,
+  KEY_RIGHT,
+  KEY_DOWN
+]
+
 const KEYDOWN_EVENT = 'keydown'
 const KEYUP_EVENT = 'keyup'
 
@@ -53,6 +60,7 @@ const PORT = process.env.PORT || 3000
 module.exports = {
   BLACK,
   WHITE,
+  ARROW_KEYS,
   KEY_TO_DIRECTION,
   KEY_TO_JOYSTICK_EVENT,
   KEY_TO_STRING,

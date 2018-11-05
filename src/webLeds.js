@@ -14,8 +14,7 @@ const {
 const {
   BLACK,
   MATRIX_LENGTH,
-  MATRIX_SIZE,
-  ONE_SECOND_IN_MS
+  MATRIX_SIZE
 } = require('./constants')
 
 const DEFAULT_SCROLL_SPEED = 0.1
@@ -178,10 +177,14 @@ const WebLeds = socket => {
     rotation = (checkAngle(rotation - 90)) % 360
 
     const scrollSync = pixels => {
-      if (pixels.length < MATRIX_LENGTH) return
+      if (pixels.length < MATRIX_LENGTH) {
+        rotation = previousRotation
+        return
+      }
       setPixels(true, pixels.slice(0, MATRIX_LENGTH))
-      sleep(scrollSpeed)
-      scrollSync(pixels.slice(MATRIX_SIZE))
+      sleep(scrollSpeed).then(() => {
+        scrollSync(pixels.slice(MATRIX_SIZE))
+      })
     }
 
     const scroll = pixels => {
@@ -191,7 +194,9 @@ const WebLeds = socket => {
             rotation = previousRotation
             return callback(error)
           }
-          setTimeout(scroll, scrollSpeed * ONE_SECOND_IN_MS, pixels.slice(MATRIX_SIZE))
+          sleep(scrollSpeed).then(() => {
+            scroll(pixels.slice(MATRIX_SIZE))
+          })
         })
       } else {
         rotation = previousRotation
@@ -201,7 +206,6 @@ const WebLeds = socket => {
 
     if (sync) {
       scrollSync(pixels)
-      rotation = previousRotation
     } else {
       scroll(pixels)
     }
@@ -215,13 +219,23 @@ const WebLeds = socket => {
     backColor,
     callback = noop
   ) => {
+    const flashSync = message => {
+      if (!message.length) return
+      showLetter(true, message[0], textColor, backColor)
+      sleep(flashSpeed).then(() => {
+        flashSync(message.slice(1))
+      })
+    }
+
     const flash = message => {
       if (message.length) {
         showLetter(message[0], textColor, backColor, (error) => {
           if (error) {
             return console.error(error.message)
           }
-          setTimeout(flash, flashSpeed * ONE_SECOND_IN_MS, message.slice(1))
+          sleep(flashSpeed).then(() => {
+            flash(message.slice(1))
+          })
         })
       } else {
         return callback(null)
@@ -229,10 +243,7 @@ const WebLeds = socket => {
     }
 
     if (sync) {
-      message.split('').forEach(char => {
-        showLetter(true, char, textColor, backColor)
-        sleep(flashSpeed)
-      })
+      flashSync(message)
     } else {
       flash(message)
     }

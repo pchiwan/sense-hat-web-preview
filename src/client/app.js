@@ -2,9 +2,14 @@ import { h, render } from 'preact'
 
 import Console from './components/console'
 import SenseHAT from './components/senseHat'
+import { isArrowKey } from './utils'
 
 const App = socket => {
   const handleKeyEvent = event => {
+    if (isArrowKey(event.keyCode)) {
+      event.preventDefault()
+    }
+
     socket.emit('handleKeyEvent', {
       keyCode: event.keyCode,
       eventType: event.type

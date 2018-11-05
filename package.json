@@ -2,7 +2,7 @@
   "name": "sense-hat-web-emu",
   "version": "0.0.1",
   "description": "Web emulator for Sense HAT applications",
-  "main": "src/app.js",
+  "main": "src/index.js",
   "scripts": {
     "start:client": "parcel build ./src/client/index.js --out-dir dist --out-file client.js --public-url ./dist",
     "start:server": "nodemon ./src/index.js",
@@ -30,6 +30,7 @@
     "babel-preset-env": "^1.7.0",
     "babel-preset-preact": "^1.1.0",
     "babel-preset-stage-0": "^6.24.1",
+    "colors": "^1.3.2",
     "concurrently": "^4.0.1",
     "eslint": "4.19.1",
     "eslint-plugin-react": "^7.11.1",

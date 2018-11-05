@@ -1,9 +1,29 @@
 const fs = require('fs')
 const PNG = require('pngjs').PNG
 
-const { MATRIX_SIZE, BLACK, WHITE } = require('./constants')
+const {
+  BLACK,
+  WHITE,
+  MATRIX_SIZE,
+  ONE_SECOND_IN_MS
+} = require('./constants')
 const TEXT_ASSETS = 'sense_hat_text'
 const LETTER_PIXELS = 5 * 8
+
+const PIXEL_MAP = {
+  0: (x, y) => y * MATRIX_SIZE + x,
+  90: (x, y) => y + ((MATRIX_SIZE - 1) - x) * MATRIX_SIZE,
+  180: (x, y) => ((MATRIX_SIZE - 1) - y) * MATRIX_SIZE + ((MATRIX_SIZE - 1) - x),
+  270: (x, y) => (MATRIX_SIZE - 1) - y + x * MATRIX_SIZE
+}
+
+function equalArrays (arr1, arr2) {
+  return arr1.every((value, index) => value === arr2[index])
+}
+
+function isBlack (color) {
+  return equalArrays(color, BLACK)
+}
 
 function isValidColorValue (value) {
   return value >= 0 && value <= 255
@@ -22,11 +42,13 @@ function rgbArray (r = 0, g = 0, b = 0) {
 
 function pngTopixels (png) {
   return Array.from(new Array(png.width * png.height), (_, i) => {
-    return Array.from(new Array(3), (_, j) => png.data[i * 4 + j]);
+    return Array.from(new Array(3), (_, j) => png.data[i * 4 + j])
   })
 }
 
-function loadImageSync(filePath) {
+// Accepts a path to an 8 x 8 image file and updates the LED matrix with
+// the image
+function loadImageSync (filePath) {
   try {
     fs.accessSync(filePath)
   } catch (error) {
@@ -40,8 +62,37 @@ function loadImageSync(filePath) {
   return pixels
 }
 
+function loadImageAsync (filePath) {
+  return new Promise((resolve, reject) => {
+    fs.access(filePath, readFile)
+
+    function readFile(error) {
+      if (error) {
+        return reject(`${filePath} not found`)
+      }
+      fs.readFile(filePath, parsePNG)
+    }
+
+    function parsePNG(error, buf) {
+      if (error) {
+        return reject(`${filePath} could not be read`)
+      }
+      new PNG().parse(buf, convertPNG)
+    }
+
+    function convertPNG(error, png) {
+      if (error) {
+        return reject(`Could not parse PNG ${error.message}`)
+      }
+
+      const pixels = pngTopixels(png)
+      resolve(pixels)
+    }
+  })
+}
+
 // Builds a character indexed object of pixels used by show_message
-function loadTextAssets(textImageFile, textFile) {
+function loadTextAssets (textImageFile, textFile) {
   const textPixels = loadImageSync(textImageFile, false)
   const loadedText = fs.readFileSync(textFile, 'utf8')
 
@@ -63,24 +114,113 @@ const letters = loadTextAssets(
   `${__dirname}/assets/${TEXT_ASSETS}.txt`
 )
 
-function isBlack (color) {
-  return color.every(value => value === 0)
-}
-
-function getCharPixels(character, letters) {
+function getCharPixels (character) {
   return character.length === 1 && character in letters
     ? letters[character]
     : letters['?']
 }
 
-function letterPixels(letter, textColor = WHITE, backColor = BLACK) {
+function letterPixels (letter, textColor = WHITE, backColor = BLACK) {
+  const letterPadding = Array(MATRIX_SIZE * 2).fill(backColor)
+
   return Array(MATRIX_SIZE).fill(backColor)
-    .concat(getCharPixels(letter).map(rgb => isBlack(rgb) ? backColor : textColor))
-    .concat(Array(MATRIX_SIZE * 2).fill(backColor))
+    .concat(getCharPixels(letter).map(
+      rgb => isBlack(rgb) ? backColor : textColor)
+    )
+    .concat(letterPadding)
+}
+
+function scrollPixels (message, textColor = WHITE, backColor = BLACK) {
+  const stringPadding = Array(MATRIX_SIZE).fill(backColor)
+  const letterPadding = Array(MATRIX_SIZE * 2).fill(backColor)
+
+  return message.split('')
+    .reduce((pixels, char) => pixels
+      .concat(trimWhitespace(getCharPixels(char)).map(
+        rgb => isBlack(rgb) ? backColor : textColor)
+      )
+      .concat(letterPadding), stringPadding)
+    .concat(stringPadding)
+}
+
+function trimBack (pixels) {
+  return pixels.slice(-MATRIX_SIZE).every(isBlack)
+    ? trimBack(pixels.slice(0, -MATRIX_SIZE))
+    : pixels
+}
+
+function trimFront (pixels) {
+  return pixels.slice(0, MATRIX_SIZE).every(isBlack)
+    ? trimFront(pixels.slice(MATRIX_SIZE))
+    : pixels
+}
+
+function trimWhitespace (pixels) {
+  return !pixels.every(isBlack)
+    ? trimBack(trimFront(pixels))
+    : pixels
+}
+
+function checkXY (x, y) {
+  if (x < 0 || x > MATRIX_SIZE - 1) {
+    throw Error(`x=${x} violates 0 <= x <= ${MATRIX_SIZE - 1}`)
+  }
+  if (y < 0 || y > MATRIX_SIZE - 1) {
+    throw Error(`y=${y} violates 0 <= y <= ${MATRIX_SIZE - 1}`)
+  }
+}
+
+function getCoord (x, y, rotation) {
+  return PIXEL_MAP[rotation](x, y)
+}
+
+function mirrorH(pixels, width) {
+  return pixels.length
+    ? pixels
+      .slice(0, width)
+      .reverse()
+      .concat(mirrorH(pixels.slice(width), width))
+    : []
+}
+
+function horizontalMirror (pixels) {
+  return mirrorH(pixels, Math.sqrt(pixels.length))
+}
+
+function mirrorV (pixels, width) {
+  return pixels.length
+    ? pixels
+      .slice(pixels.length - width)
+      .concat(mirrorV(pixels.slice(0, pixels.length - width), width))
+    : []
+}
+
+function verticalMirror (pixels) {
+  return mirrorV(pixels, Math.sqrt(pixels.length))
+}
+
+function sleep (timeout) {
+  return new Promise((resolve) => setTimeout(resolve, timeout * ONE_SECOND_IN_MS))
+}
+
+function curryFunction (value, func) {
+  return (...args) => func.apply(this, [value, ...[].slice.call(args)])
 }
 
 module.exports = {
-  letters,
+  checkXY,
+  equalArrays,
+  getCharPixels,
+  getCoord,
+  horizontalMirror,
+  isBlack,
   letterPixels,
-  rgbArray
+  loadImageAsync,
+  loadImageSync,
+  rgbArray,
+  scrollPixels,
+  sleep,
+  curryFunction,
+  trimWhitespace,
+  verticalMirror
 }

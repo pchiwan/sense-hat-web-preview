@@ -48,16 +48,6 @@ const { shapes } = (() => {
       _, Y, R, R, R, R, Y, _,
       _, _, Y, Y, Y, Y, _, _
     ],
-    drop: [
-      _, _, _, _, _, _, _, _,
-      _, _, _, B, _, _, _, _,
-      _, _, B, B, B, _, _, _,
-      _, B, B, B, B, B, _, _,
-      _, B, B, B, B, B, _, _,
-      _, B, B, B, B, B, _, _,
-      _, _, B, B, B, _, _, _,
-      _, _, _, _, _, _, _, _
-    ],
     check: [
       _, _, _, _, _, _, _, _,
       _, _, _, _, _, _, G, G,
@@ -74,7 +64,7 @@ const { shapes } = (() => {
 })()
 
 const drawShape = shape => {
-  senseLeds.setPixels(shape)
+  senseLeds.sync.setPixels(shape)
 }
 
 const changeShape = () => {
@@ -96,6 +86,18 @@ module.exports = (_senseJoystick, _senseLeds) => {
     joystick.on('press', (val) => {
       if (val === 'click') {
         changeShape()
+      }
+      if (val === 'right') {
+        senseLeds.sync.showMessage('hello world!')
+      }
+      if (val === 'up') {
+        senseLeds.sync.flashMessage('hello world!')
+      }
+      if (val === 'down') {
+        senseLeds.sync.flipV()
+      }
+      if (val === 'left') {
+        senseLeds.sync.flipH()
       }
     })
   })

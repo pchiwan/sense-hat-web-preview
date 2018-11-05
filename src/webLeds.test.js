@@ -36,6 +36,37 @@ describe('WebLeds', () => {
     expect(matrix.every(isBlack)).toBeTruthy()
   })
 
+  describe('paint', () => {
+    test('sends current matrix through socket', done => {      
+      const originalMatrix = webLeds.sync.getPixels()
+
+      mocket.on('updateMatrix', matrix => {
+        expect(matrix).toEqual(originalMatrix)
+        done()
+      })
+      webLeds.sync.setPixels(originalMatrix)
+    })
+
+    test('applies current rotation to matrix before sending it through socket', done => {
+      let matrix = webLeds.sync.getPixels()
+      matrix = conditionallyFillMatrix(matrix, RED, (x, y) => x <= 3 && y <= 3)
+      webLeds.sync.setPixels(matrix)
+      log(webLeds.sync.getPixels())
+
+      mocket.on('updateMatrix', matrix => {
+        log(matrix)
+        reduceMatrix(matrix, (x, y, value) => {
+          if (x > 3 && y <= 3) {
+            expect(equalArrays(value, RED)).toBeTruthy()
+          }
+        })
+        done()
+      })
+  
+      webLeds.setRotation(90)
+    })
+  })
+
   describe('clear', () => {
     test('fills the matrix with black if invalid color is provided', () => {
       webLeds.sync.clear(300, 0, 0)
@@ -150,26 +181,6 @@ describe('WebLeds', () => {
 
       webLeds.sync.setRotation(-90)
       expect(webLeds.sync.rotation).toEqual(270)
-    })
-
-    test('[visual] sets rotation if provided angle is valid', done => {
-      // this tests rotation visually
-      let matrix = webLeds.sync.getPixels()
-      matrix = conditionallyFillMatrix(matrix, RED, (x, y) => x <= 3 && y <= 3)
-      webLeds.sync.setPixels(matrix)
-      log(webLeds.sync.getPixels())
-
-      mocket.on('updateMatrix', matrix => {
-        log(matrix)
-        reduceMatrix(matrix, (x, y, value) => {
-          if (x > 3 && y <= 3) {
-            expect(equalArrays(value, RED)).toBeTruthy()
-          }
-        })
-        done()
-      })
-  
-      webLeds.setRotation(90)
     })
   })
 })

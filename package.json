@@ -2,15 +2,15 @@
   "name": "sense-hat-web-emu",
   "version": "0.0.1",
   "description": "Web emulator for Sense HAT applications",
-  "main": "src/index.js",
+  "main": "dist/index.js",
   "scripts": {
-    "start:client": "parcel build ./src/client/index.js --out-dir dist --out-file client.js --public-url ./dist",
-    "start:server": "nodemon ./src/index.js",
-    "start": "concurrently \"yarn start:client\" \"yarn start:server\"",
-    "copy-assets": "cp -rf ./src/index.html ./dist/index.html && cp -rf ./src/assets ./dist/assets",
+    "build": "yarn build:client && yarn build:server",
     "build:client": "parcel build ./src/client/index.js --out-dir dist --out-file client.js --public-url ./dist --no-source-maps",
     "build:server": "parcel build ./src/index.js --out-dir dist --no-source-maps --target node && yarn copy-assets",
-    "build": "yarn build:client && yarn build:server",
+    "copy-assets": "cp -rf ./src/index.html ./dist/index.html && cp -rf ./src/assets ./dist/assets",
+    "start": "concurrently \"yarn start:client\" \"yarn start:server\"",
+    "start:client": "parcel build ./src/client/index.js --out-dir dist --out-file client.js --public-url ./dist",
+    "start:server": "nodemon ./src/index.js",
     "serve": "node ./dist/index.js",
     "lint": "eslint src/**/*.js",
     "test": "jest"
@@ -41,6 +41,7 @@
     "socket.io-mock": "^1.2.3"
   },
   "dependencies": {
+    "better-opn": "^0.1.0",
     "express": "^4.16.4",
     "opn": "^5.4.0",
     "parcel-bundler": "^1.10.3",

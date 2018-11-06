@@ -1,4 +1,4 @@
-const opn = require('opn')
+const opn = require('better-opn')
 
 const WebJoystick = require('./webJoystick')
 const WebLeds = require('./webLeds')

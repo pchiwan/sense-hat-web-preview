@@ -15,7 +15,6 @@ const {
 const ENABLE_LOG = false
 const log = matrix => ENABLE_LOG && consoleLogMatrix(matrix)
 
-
 const RED = [255, 0, 0]
 const GREEN = [0, 255, 0]
 const isRed = color => equalArrays(color, RED)
@@ -27,7 +26,7 @@ describe('WebLeds', () => {
 
   beforeEach(() => {
     mocket = new MockedSocket()
-    webLeds = new WebLeds(mocket.socketClient)
+    webLeds = WebLeds(mocket.socketClient)
   })
 
   test('matrix is initially black', () => {
@@ -37,7 +36,7 @@ describe('WebLeds', () => {
   })
 
   describe('paint', () => {
-    test('sends current matrix through socket', done => {      
+    test('sends current matrix through socket', done => {
       const originalMatrix = webLeds.sync.getPixels()
 
       mocket.on('updateMatrix', matrix => {
@@ -62,7 +61,7 @@ describe('WebLeds', () => {
         })
         done()
       })
-  
+
       webLeds.setRotation(90)
     })
   })
@@ -136,7 +135,7 @@ describe('WebLeds', () => {
       matrix = conditionallyFillMatrix(matrix, RED, x => x === 0)
       webLeds.sync.setPixels(matrix)
       log(webLeds.sync.getPixels())
-      
+
       matrix = webLeds.sync.flipH(false)
       log(matrix)
       reduceMatrix(matrix, (x, y, value) => {
@@ -153,7 +152,7 @@ describe('WebLeds', () => {
       matrix = conditionallyFillMatrix(matrix, RED, (_, y) => y === 0)
       webLeds.sync.setPixels(matrix)
       log(webLeds.sync.getPixels())
-      
+
       matrix = webLeds.sync.flipV(false)
       log(matrix)
       reduceMatrix(matrix, (x, y, value) => {

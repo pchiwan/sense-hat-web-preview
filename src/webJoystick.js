@@ -17,14 +17,18 @@ const WebJoystick = socket => {
 
   const handleKeyEvent = ({keyCode, eventType}) => {
     const joystickEvent = KEY_TO_JOYSTICK_EVENT[eventType]
-    emitEvent(joystickEvent, KEY_TO_DIRECTION[keyCode])
+    const direction = KEY_TO_DIRECTION[keyCode]
 
-    if (KEY_TO_STRING[keyCode]) {
-      logger.log(`${joystickEvent} ${KEY_TO_STRING[keyCode]}`)
+    if (joystickEvent && direction) {
+      emitEvent(joystickEvent, direction)
+
+      if (KEY_TO_STRING[keyCode]) {
+        logger.log(`${joystickEvent} ${KEY_TO_STRING[keyCode]}`)
+      }
     }
   }
 
-  const on = (eventName, handlerFn) => {
+  const addEventHandler = (eventName, handlerFn) => {
     if (!subscribers[eventName]) {
       subscribers[eventName] = []
     }
@@ -34,16 +38,17 @@ const WebJoystick = socket => {
   socket.on('handleKeyEvent', handleKeyEvent)
 
   return {
-    on
+    on: addEventHandler
   }
 }
 
 module.exports = socket => {
+  const webJoystick = WebJoystick(socket)
+
   return {
-    getJoystick: () => {
-      return new Promise((resolve) => {
-        resolve(WebJoystick(socket))
-      })
+    getJoystick: () => Promise.resolve(webJoystick),
+    sync: {
+      getJoystick: () => webJoystick
     }
   }
 }

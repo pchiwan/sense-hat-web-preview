@@ -20,6 +20,7 @@
     }
   },
   "globals": {
+    "jest": true,
     "beforeEach": true,
     "describe": true,
     "expect": true,

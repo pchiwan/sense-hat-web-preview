@@ -1,10 +1,26 @@
 #!/usr/bin/env node
 
+const fs = require('fs')
 const path = require('path')
-const nodeCLI = require('shelljs-nodecli')
+const nodecli = require('shelljs-nodecli')
 
-const webEmuPath = `${path.join(__dirname, '..', 'dist')}/index.js`
-const entryFileName = process.argv[process.argv.length - 1]
-const entryFilePath = `${path.join(process.cwd(), entryFileName)}`
+if (process.argv.length >= 3) {
+  const nodemonPath = path.join(process.cwd(), 'node_modules', '.bin', 'nodemon')
+  const webEmuPath = path.join(process.cwd(), 'node_modules', 'sense-hat-web-emu', 'dist', 'index.js')
+  
+  const entryFileName = process.argv[process.argv.length - 1]
+  const entryFilePath = `${path.join(process.cwd(), entryFileName)}`
 
-nodeCLI.exec('node', webEmuPath, entryFilePath)
+  console.log('--------------')
+  console.log(`Entry file: ${entryFilePath}`)
+
+  fs.stat(nodemonPath, (err, _) => {
+    if (err) {
+      nodecli.exec('node', webEmuPath, entryFilePath)
+    } else {
+      nodecli.exec(nodemonPath, webEmuPath, entryFilePath)
+    }
+  })
+} else {
+  console.error('Missing entry file!')
+}

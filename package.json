@@ -12,6 +12,7 @@
     "start:client": "parcel build ./src/client/index.js --out-dir dist --out-file client.js --public-url ./dist",
     "start:server": "nodemon ./src/index.js",
     "serve": "node ./dist/index.js",
+    "prepublishOnly": "yarn build",
     "lint": "eslint src/**/*.js",
     "test": "jest"
   },
@@ -62,5 +63,9 @@
     "roots": [
       "src"
     ]
-  }
+  },
+  "files": [
+    "bin",
+    "dist"
+  ]
 }

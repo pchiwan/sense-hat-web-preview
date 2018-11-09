@@ -199,12 +199,12 @@ function verticalMirror (pixels) {
   return mirrorV(pixels, Math.sqrt(pixels.length))
 }
 
-function sleep (timeout) {
-  return new Promise((resolve) => setTimeout(resolve, timeout * ONE_SECOND_IN_MS))
-}
-
 function curryFunction (value, func) {
   return (...args) => func.apply(this, [value, ...[].slice.call(args)])
+}
+
+function sleep (timeout) {
+  return new Promise((resolve) => setTimeout(resolve, timeout * ONE_SECOND_IN_MS))
 }
 
 module.exports = {

@@ -83,41 +83,64 @@ const WebLeds = socket => {
       : callback(innerMatrix[getCoord(x, y, rotation)])
   }
 
-  const setPixels = (sync = true, matrix, callback = noop) => {
+  const setPixelsSync = matrix => {
     if (matrix.length !== MATRIX_LENGTH) {
       const errorMessage = `Pixel arrays must have ${MATRIX_LENGTH} elements`
-      return sync
-        ?  console.error(errorMessage)
-        : callback(Error(errorMessage))
+      return console.error(errorMessage)
     }
-    
-    return sync
-      ? setMatrixAndPaint(matrix)
-      : new Promise(resolve => {
-        setMatrixAndPaint(matrix)
-        callback(null, innerMatrix)
-        resolve(innerMatrix)
-      })
+    setMatrixAndPaint(matrix)
   }
 
-  const setPixel = (sync = true, x, y, r, g, b, callback = noop) => {
+  const setPixelsAsync = (matrix, callback = noop) => {
+    return new Promise((resolve, reject) => {
+      if (matrix.length !== MATRIX_LENGTH) {
+        const errorMessage = `Pixel arrays must have ${MATRIX_LENGTH} elements`
+        return reject(callback(Error(errorMessage)))
+      }
+      setMatrixAndPaint(matrix)
+      callback(null, innerMatrix)
+      resolve(innerMatrix)
+    })
+  }
+
+  // Accepts a array containing 64 smaller arays of [R,G,B] pixels and
+  // updates the LED matrix. R,G,B elements must intergers between 0
+  // and 255
+  const setPixels = (sync = true, matrix, callback = noop) => {
+    return (sync ? setPixelsSync : setPixelsAsync)(matrix, callback)
+  }
+  
+  const setPixelSync = (x, y, r, g, b) => {
     const rgb = rgbArray(r, g, b)
 
     try {
       checkXY(x, y)
     } catch (error) {
-      return sync
-        ? console.error(error.messsage)
-        : callback(error)
+      return console.error(error.messsage)
     }
+    
+    setPixelAndPaint(x, y, rgb)
+  }
 
-    return sync
-      ? setPixelAndPaint(x, y, rgb)
-      : new Promise(resolve => {
-        setPixelAndPaint(x, y, rgb)
-        callback(null, innerMatrix)
-        resolve(innerMatrix)
-      })
+  // Updates the single [R,G,B] pixel specified by x and y on the LED matrix
+  // Top left = 0,0 Bottom right = 7,7
+  // e.g. sense.setPixel(x, y, r, g, b, callback)
+  // or
+  // pixel = [r, g, b]
+  const setPixelAsync = (x, y, r, g, b, callback = noop) => {
+    return new Promise((resolve, reject) => {
+      const rgb = rgbArray(r, g, b)
+
+      try {
+        checkXY(x, y)
+      } catch (error) {
+        return reject(callback(error))
+      }
+
+      setPixelAndPaint(x, y, rgb)
+      callback(null, innerMatrix)
+      resolve(innerMatrix)
+    })
   }
 
   // Sets the LED matrix rotation for viewing, adjust if the Pi is upside
@@ -132,13 +155,10 @@ const WebLeds = socket => {
     setPixels(sync, innerMatrix, callback)
   }
 
-  // Displays a single text character on the LED matrix using the specified colors
-  const showLetter = (sync = true, letter, textColor, backColor, callback = noop) => {
+  const showLetterSync = (letter, textColor, backColor) => {
     if (letter.length !== 1) {
       const errorMessage = 'Only one character may be passed into showLetter'
-      return sync
-        ? console.error(errorMessage)
-        : callback(Error(errorMessage))
+      return console.error(errorMessage)
     }
 
     const pixels = letterPixels(letter, textColor, backColor)
@@ -148,105 +168,97 @@ const WebLeds = socket => {
     const previousRotation = rotation
     rotation = (checkAngle(rotation - 90)) % 360
 
-    if (sync) {
-      setPixels(true, pixels)
-      rotation = previousRotation
-    } else {
-      setPixels(false, pixels, (error) => {
+    setPixelsSync(pixels)
+    rotation = previousRotation
+  }
+
+  // Displays a single text character on the LED matrix using the specified colors
+  const showLetterAsync = (letter, textColor, backColor, callback = noop) => {
+    return new Promise(async (resolve, reject) => {
+      if (letter.length !== 1) {
+        const errorMessage = 'Only one character may be passed into showLetter'
+        return reject(callback(Error(errorMessage)))
+      }
+
+      const pixels = letterPixels(letter, textColor, backColor)
+
+      // We must rotate the pixel map right through 90 degrees when drawing
+      // text, see loadTextAssets
+      const previousRotation = rotation
+      rotation = (checkAngle(rotation - 90)) % 360
+
+      try {
+        await setPixelsAsync(pixels)
+        resolve(pixels)
+      } catch (error) {
+        reject(callback(error))
+      } finally {
         rotation = previousRotation
-        callback(error)
-      })
-    }
+      }
+    })
   }
 
   // Scrolls a string of text across the LED matrix using the specified
   // speed and colors
   const showMessage = (
-    sync = true,
     textString,
     scrollSpeed = DEFAULT_SCROLL_SPEED,
     textColor,
     backColor,
     callback = noop
   ) => {
-    const pixels = scrollPixels(textString, textColor, backColor)
+    return new Promise((resolve, reject) => {
+      const pixels = scrollPixels(textString, textColor, backColor)
 
-    // We must rotate the pixel map left through 90 degrees when drawing
-    // text, see loadTextAssets
-    const previousRotation = rotation
-    rotation = (checkAngle(rotation - 90)) % 360
+      // We must rotate the pixel map left through 90 degrees when drawing
+      // text, see loadTextAssets
+      const previousRotation = rotation
+      rotation = (checkAngle(rotation - 90)) % 360
 
-    const scrollSync = pixels => {
-      if (pixels.length < MATRIX_LENGTH) {
-        rotation = previousRotation
-        return
+      const scroll = async pixels => {
+        if (pixels.length < MATRIX_LENGTH) {
+          rotation = previousRotation
+          return resolve(callback(null))
+        }
+
+        try {
+          await setPixelsAsync(pixels.slice(0, MATRIX_LENGTH))
+          await sleep(scrollSpeed)
+          scroll(pixels.slice(MATRIX_SIZE))
+        } catch (error) {
+          rotation = previousRotation
+          return reject(callback(error))
+        }
       }
-      setPixels(true, pixels.slice(0, MATRIX_LENGTH))
-      sleep(scrollSpeed).then(() => {
-        scrollSync(pixels.slice(MATRIX_SIZE))
-      })
-    }
 
-    const scroll = pixels => {
-      if (pixels.length > MATRIX_LENGTH) {
-        setPixels(pixels.slice(0, MATRIX_LENGTH), error => {
-          if (error) {
-            rotation = previousRotation
-            return callback(error)
-          }
-          sleep(scrollSpeed).then(() => {
-            scroll(pixels.slice(MATRIX_SIZE))
-          })
-        })
-      } else {
-        rotation = previousRotation
-        return callback(null)
-      }
-    }
-
-    if (sync) {
-      scrollSync(pixels)
-    } else {
       scroll(pixels)
-    }
+    })
   }
 
   const flashMessage = (
-    sync = true,
     message,
     flashSpeed = DEFAULT_FLASH_SPEED,
     textColor,
     backColor,
     callback = noop
   ) => {
-    const flashSync = message => {
-      if (!message.length) return
-      showLetter(true, message[0], textColor, backColor)
-      sleep(flashSpeed).then(() => {
-        flashSync(message.slice(1))
-      })
-    }
+    return new Promise((resolve, reject) => {
+      const flash = async (message) => {
+        if (!message.length) {
+          return resolve(callback(null))
+        }
 
-    const flash = message => {
-      if (message.length) {
-        showLetter(message[0], textColor, backColor, (error) => {
-          if (error) {
-            return console.error(error.message)
-          }
-          sleep(flashSpeed).then(() => {
-            flash(message.slice(1))
-          })
-        })
-      } else {
-        return callback(null)
+        try {
+          await showLetterAsync(message[0], textColor, backColor)
+          await sleep(flashSpeed)
+          flash(message.slice(1))
+        } catch (error) {
+          return reject(console.error(error.message))
+        }
       }
-    }
 
-    if (sync) {
-      flashSync(message)
-    } else {
       flash(message)
-    }
+    })
   }
 
   // Flip LED matrix horizontal
@@ -279,14 +291,14 @@ const WebLeds = socket => {
     if (sync) {
       const pixels = loadImageSync(filePath)
       if (redraw) {
-        setPixels(true, pixels)
+        setPixelsSync(pixels)
       }
       return pixels
     }
 
     loadImageAsync(filePath).then(pixels => {
       if (redraw) {
-        setPixels(false, pixels, callback)
+        setPixelsAsync(pixels, callback)
       } else {
         callback(null, pixels)
       }
@@ -295,16 +307,16 @@ const WebLeds = socket => {
 
   return {
     clear: curryFunction(false, clear),
-    setPixel: curryFunction(false, setPixel),
+    setPixel: setPixelAsync,
     getPixel: curryFunction(false, getPixel),
-    setPixels: curryFunction(false, setPixels),
+    setPixels: setPixelsAsync,
     getPixels: curryFunction(false, getPixels),
     flipH: curryFunction(false, flipH),
     flipV: curryFunction(false, flipV),
     setRotation: curryFunction(false, setRotation),
-    showMessage: curryFunction(false, showMessage),
-    flashMessage: curryFunction(false, flashMessage),
-    showLetter: curryFunction(false, showLetter),
+    showMessage,
+    flashMessage,
+    showLetter: showLetterAsync,
     loadImage: curryFunction(false, loadImage),
     get rotation () { return rotation },
     set rotation (angle) { setRotation(false, angle) },
@@ -317,15 +329,15 @@ const WebLeds = socket => {
       sleep,
       clear: curryFunction(true, clear),
       getPixel: curryFunction(true, getPixel),
-      setPixel: curryFunction(true, setPixel),
+      setPixel: setPixelSync,
       getPixels: curryFunction(true, getPixels),
-      setPixels: curryFunction(true, setPixels),
+      setPixels: setPixelsSync,
       flipH: curryFunction(true, flipH),
       flipV: curryFunction(true, flipV),
       setRotation: curryFunction(true, setRotation),
-      showMessage: curryFunction(true, showMessage),
-      flashMessage: curryFunction(true, flashMessage),
-      showLetter: curryFunction(true, showLetter),
+      showMessage,
+      flashMessage,
+      showLetter: showLetterSync,
       loadImage: curryFunction(true, loadImage),
       get rotation () { return rotation },
       set rotation (angle) { setRotation(true, angle) },

@@ -100,6 +100,13 @@ module.exports = (senseJoystick, senseLeds) => {
 }
 ```
 
+Once your Sense HAT application is running, use your keyboard to control the Sense HAT joystick. Controls are as follows:
+- UP: Up arrow ↑
+- RIGHT: Right arrow →
+- DOWN: Down arrow ↓
+- LEFT: Left arrow ←
+- CLICK: Enter key ↩
+
 ## Disclaimer
 
 The web emulator runs your Sense HAT Node application on the server side and communicates with the browser through sockets. Because of the asynchronous nature of this communication, an application written using the synchronous version of `senseLeds` methods will not work correctly. If you're willing to use the web emulator and it's not imperative for you to use synchronous methods, I'd recommend using their async version. Otherwise, I'm truly sorry and also accepting contributions to work around this limitation.

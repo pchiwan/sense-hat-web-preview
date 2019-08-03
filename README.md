@@ -102,11 +102,15 @@ module.exports = (senseJoystick, senseLeds) => {
 
 ## Disclaimer
 
-The web emulator runs your Sense HAT Node application on the server side and communicates with the browser through sockets. Because of the asynchronous nature of this communication, an application written using the synchronous version of `senseleds` methods will not work correctly. If you're willing to use the web emulator and it's not imperative for you to use synchronous methods, I'd recommend using their async version. Otherwise, I'm truly sorry and also accepting contributions to work around this limitation.
+The web emulator runs your Sense HAT Node application on the server side and communicates with the browser through sockets. Because of the asynchronous nature of this communication, an application written using the synchronous version of `senseLeds` methods will not work correctly. If you're willing to use the web emulator and it's not imperative for you to use synchronous methods, I'd recommend using their async version. Otherwise, I'm truly sorry and also accepting contributions to work around this limitation.
 
 ## Documentation
 
 - [Documentation for `sense-hat-led`](https://github.com/balena-io-playground/node-sense-hat)
 - [Documentation for `sense-joystick`](https://github.com/balena-io-playground/sense-joystick)
 
-Thanks for trying the Sense HAT web emulator! Your feedback is very welcome, and your contributions even more so!
+## Thanks
+
+Thank you for trying the Sense HAT web emulator!
+
+Your feedback is very welcome, and your contributions even more so!

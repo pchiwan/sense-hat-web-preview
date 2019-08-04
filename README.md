@@ -47,33 +47,6 @@ module.exports = (senseJoystick, senseLeds) => {
 }
 ```
 
-When running the Sense HAT web emulator, it will automatically inject the emulator versions of `senseJoystick` and `senseLeds` into your applications entry point.
-
-Now you can add a script in your `package.json` file
-
-```json
-"scripts": {
-  "webemu": "webemu ./path/to/file.js"
-}
-```
-
-And you can either run it with
-```
-npm run webemu
-```
-
-or 
-
-```
-yarn webemu
-```
-
-Alternatively, if you don't have a `package.json` file or don't want to add a script to it, you can also run:
-
-```
-./node_modules/.bin/webemu ./src/test-app.js
-```
-
 Here's an example of what an application's entry file could look like:
 
 ```javascript
@@ -99,6 +72,50 @@ module.exports = (senseJoystick, senseLeds) => {
   })
 }
 ```
+
+When running the Sense HAT web emulator, it will automatically inject the emulator versions of `senseJoystick` and `senseLeds` into your applications entry point.
+
+Now you can add a script in your `package.json` file
+
+```json
+"scripts": {
+  "webemu": "webemu start --file ./path/to/file.js"
+}
+```
+
+And you'd either run it with:
+```
+npm run webemu
+```
+
+or 
+
+```
+yarn webemu
+```
+
+Alternatively, if you don't have a `package.json` file or don't want to add a script to it, you can also run:
+
+```
+./node_modules/.bin/webemu start --file ./src/test-app.js
+```
+
+### Options
+
+These are the option flags you can provide to the web emulator:
+
+| Flag   | Description                                                                | Default value | Required |
+|--------|----------------------------------------------------------------------------|---------------|----------|
+| file   | Relative path to your application's entry file                             | -             | Yes      |
+| launch | Specify whether to launch the browser when the web emulator starts         | False         | No       |
+| port   | Specify the port where the web emulator will start                         | 3000          | No       |
+| watch  | Specify whether to start the web emulator in watch mode (requires nodemon) | False         | No       |
+
+Examples:
+`./node_modules/.bin/webemu start --file ./src/test-app.js --port 4000`
+`./node_modules/.bin/webemu start --file ./src/test-app.js --launch --watch`
+
+## Controls
 
 Once your Sense HAT application is running, use your keyboard to control the Sense HAT joystick. Controls are as follows:
 - UP: Up arrow ↑

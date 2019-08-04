@@ -1,34 +1,39 @@
 const opn = require('better-opn')
+const args = require('minimist')(process.argv.slice(2));
 
 const WebJoystick = require('./webJoystick')
 const WebLeds = require('./webLeds')
-const { PORT } = require('./constants')
+
+const { DEFAULT_PORT } = require('./constants')
+const PORT = args['port'] || DEFAULT_PORT
 
 try {
-  if (process.argv.length < 3) {
-    throw new Error('Missing application entry file from arguments')
+  if (!args['file']) {
+    throw Error('Missing application entry file from arguments')
   }
 
-  const app = require(process.argv[2])
+  const app = require(args['file'])
 
   if (!app) {
-    throw new Error('Could not import from application entry file')
+    throw Error('Could not import from application entry file')
   }
 
   if (typeof app !== 'function') {
-    throw new Error('Application entry is not a function')
+    throw Error('Application entry is not a function')
   }
 
   const server = require('./server')
   const io = require('socket.io')(server)
 
-  opn(`http://localhost:${PORT}`)
+  if (args['launch']) {
+    opn(`http://localhost:${PORT}`)
+  }
 
   io.on('connection', socket => {
     app(WebJoystick(socket), WebLeds(socket))
     
-    console.log('Sense HAT emulation started!')
+    console.log('Sense HAT web emulator started!')
   })
-} catch (e) {
-  console.error(e)
+} catch (error) {
+  console.error(error)
 }

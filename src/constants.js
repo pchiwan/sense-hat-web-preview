@@ -55,7 +55,7 @@ const MATRIX_LENGTH = MATRIX_SIZE * MATRIX_SIZE
 
 const ONE_SECOND_IN_MS = 1000
 
-const PORT = process.env.PORT || 3000
+const DEFAULT_PORT = 3000
 
 module.exports = {
   BLACK,
@@ -78,5 +78,5 @@ module.exports = {
   MATRIX_SIZE,
   MATRIX_LENGTH,
   ONE_SECOND_IN_MS,
-  PORT
+  DEFAULT_PORT
 }

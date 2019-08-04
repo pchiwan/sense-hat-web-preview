@@ -44,11 +44,13 @@
   "dependencies": {
     "better-opn": "^0.1.0",
     "express": "^4.16.4",
+    "minimist": "^1.2.0",
     "pngjs": "^3.3.3",
     "preact": "^8.3.1",
     "preact-compat": "^3.18.4",
     "shelljs-nodecli": "^0.1.1",
-    "socket.io": "^2.1.1"
+    "socket.io": "^2.1.1",
+    "yargs": "^13.3.0"
   },
   "jest": {
     "moduleNameMapper": {

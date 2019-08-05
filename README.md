@@ -127,6 +127,19 @@ Once your Sense HAT application is running, use your keyboard to control the Sen
 - LEFT: Left arrow ←
 - CLICK: Enter key ↩
 
+## Demo
+
+Check out [this running demo](https://sensehatwebemu.pchiwan.pw/)!
+
+The commands for the demo application are the following:
+- Pressing Up arrow ↑ displays the message `hello world!` one letter at a time
+- Pressing Right arrow → scrolls the message `hello world!`
+- Pressing Down arrow ↓ flips the 8x8 LED matrix vertically
+- Pressing Left arrow ← loads an 8x8 pixel image of a space invader
+- Pressing Enter key displays the next shape in the collection (heart️ ❤️ / smiley 😀 / earth 🌎 / star ⭐️ / check ✔️)
+
+[Here's](https://gitlab.com/pchiwan/sense-hat-web-emu-demo/raw/master/src/testApp.js) the source code for this Sense HAT application.
+
 ## Disclaimer
 
 The web emulator runs your Sense HAT Node application on the server side and communicates with the browser through sockets. Because of the asynchronous nature of this communication, an application written using the synchronous version of `senseLeds` methods will not work correctly. If you're willing to use the web emulator and it's not imperative for you to use synchronous methods, I'd recommend using their async version. Otherwise, I'm truly sorry and also accepting contributions to work around this limitation.

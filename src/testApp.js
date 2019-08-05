@@ -1,33 +1,27 @@
+const path = require('path')
+
+const imagePath = path.join(process.cwd(), 'src', 'space_invader.png')
+
 let senseLeds
 
 const black = [0, 0, 0]
-const red = [255, 0, 0]
-const yellow = [255, 255, 0]
 const blue = [0, 0, 255]
 const green = [0, 255, 0]
+const red = [255, 0, 0]
 const white = [255, 255, 255]
+const yellow = [255, 255, 0]
 
 let currentShapeIndex = 0
 
 const { shapes } = (() => {
   const _ = black
-  const R = red
-  const Y = yellow
   const B = blue
   const G = green
+  const R = red
   const W = white
+  const Y = yellow
 
   const shapes = {
-    none: [
-      _, _, _, _, _, _, _, _,
-      _, _, _, _, _, _, _, _,
-      _, _, _, _, _, _, _, _,
-      _, _, _, _, _, _, _, _,
-      _, _, _, _, _, _, _, _,
-      _, _, _, _, _, _, _, _,
-      _, _, _, _, _, _, _, _,
-      _, _, _, _, _, _, _, _
-    ],
     heart: [
       _, _, _, _, _, _, _, _,
       _, R, R, _, _, R, R, _,
@@ -48,6 +42,26 @@ const { shapes } = (() => {
       _, Y, R, R, R, R, Y, _,
       _, _, Y, Y, Y, Y, _, _
     ],
+    world: [
+      _, _, W, W, B, B, _, _,
+      _, G, B, G, B, B, W, _,
+      G, G, G, G, G, B, B, W,
+      G, G, G, G, B, B, B, B,
+      B, G, B, B, B, B, B, B,
+      B, B, G, B, G, G, G, B,
+      _, B, B, B, G, G, G, _,
+      _, _, B, B, B, G, _, _
+    ],
+    star: [
+      _, _, _, Y, Y, _, _, _,
+      _, _, _, Y, Y, _, _, _,
+      Y, Y, Y, Y, Y, Y, Y, Y,
+      _, Y, Y, Y, Y, Y, Y, _,
+      _, _, Y, Y, Y, Y, _, _,
+      _, Y, Y, Y, Y, Y, Y, _,
+      _, Y, Y, _, _, Y, Y, _,
+      _, Y, _, _, _, _, Y, _
+    ],
     check: [
       _, _, _, _, _, _, _, _,
       _, _, _, _, _, _, G, G,
@@ -64,7 +78,7 @@ const { shapes } = (() => {
 })()
 
 const drawShape = shape => {
-  senseLeds.sync.setPixels(shape)
+  senseLeds.setPixels(shape)
 }
 
 const changeShape = () => {
@@ -80,30 +94,31 @@ const getShape = () => {
   return shapes[Object.keys(shapes)[currentShapeIndex]]
 }
 
-module.exports = (_senseJoystick, _senseLeds) => {
+module.exports = async (_senseJoystick, _senseLeds) => {
   // Setup input callbacks
-  _senseJoystick.getJoystick().then((joystick) => {
-    joystick.on('press', (val) => {
-      if (val === 'click') {
-        changeShape()
-      }
-      if (val === 'right') {
-        senseLeds.sync.showMessage('hello world!')
-      }
-      if (val === 'up') {
-        senseLeds.sync.flashMessage('hello world!')
-      }
-      if (val === 'down') {
-        senseLeds.sync.flipV()
-      }
-      if (val === 'left') {
-        senseLeds.sync.flipH()
-      }
-    })
+  const joystick = await _senseJoystick.getJoystick()
+  joystick.on('press', async val => {
+    if (val === 'click') {
+      changeShape()
+    }
+    if (val === 'right') {
+      await senseLeds.showMessage('hello world!')
+      console.log('showMessage finished')
+    }
+    if (val === 'up') {
+      await senseLeds.flashMessage('hello world!')
+      console.log('flashMessage finished')
+    }
+    if (val === 'down') {
+      senseLeds.flipV()
+    }
+    if (val === 'left') {
+      senseLeds.loadImage(imagePath)
+    }
   })
 
   senseLeds = _senseLeds
 
-  const currentShape = shapes.none
+  const currentShape = shapes.heart
   drawShape(currentShape)
 }
